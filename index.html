@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Normative Trail — from understanding NC to a marked module</title>
+<style>
+  :root{
+    --maroon:#522448; --maroon-ink:#3c1a35;
+    --gold:#C7922A; --gold-soft:#F3E3C4;
+    --teal:#17796A; --teal-soft:#DCEEEA;
+    --rust:#BA5B3B; --rust-soft:#F6E3DB;
+    --cream:#FAF7F2; --paper:#FFFFFF;
+    --ink:#241E22; --ink-soft:#5b535a;
+    --line:#E3DCD6;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    --sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream); color:var(--ink); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--gold-soft); }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  button:focus-visible, .chip:focus-visible, .way:focus-visible{
+    outline:3px solid var(--teal); outline-offset:2px;
+  }
+
+  /* ---------------- hero ---------------- */
+  .hero{
+    background:var(--maroon); color:#fff;
+    padding:38px 6vw 30px 6vw;
+    position:relative; overflow:hidden;
+  }
+  .hero::after{
+    content:""; position:absolute; right:-60px; top:-60px; width:260px; height:260px;
+    border:1.5px solid rgba(255,255,255,.12); border-radius:50%;
+  }
+  .hero::before{
+    content:""; position:absolute; right:20px; top:40px; width:170px; height:170px;
+    border:1.5px solid rgba(255,255,255,.10); border-radius:50%;
+  }
+  .eyebrow{
+    font-size:12.5px; letter-spacing:.14em; color:#D9BFE0; font-weight:600;
+    margin:0 0 6px 0;
+  }
+  .hero h1{
+    font-family:var(--serif); font-weight:700; font-size:clamp(30px,4.4vw,52px);
+    margin:0 0 10px 0; line-height:1.04; letter-spacing:-.01em; max-width:16ch;
+  }
+  .hero p.lead{
+    max-width:56ch; color:#EBDCE7; font-size:16px; line-height:1.55; margin:0 0 26px 0;
+  }
+  .hero .stat-row{ display:flex; gap:26px; flex-wrap:wrap; }
+  .hero .stat{ font-size:13px; color:#CDB0C6; }
+  .hero .stat b{ display:block; color:#fff; font-family:var(--serif); font-size:22px; font-weight:700; }
+
+  /* ---------------- cluster picker ---------------- */
+  .picker-wrap{
+    background:var(--maroon-ink); padding:16px 6vw 20px 6vw; position:relative;
+  }
+  .picker-label{
+    font-size:12px; letter-spacing:.08em; color:#C9A9CB; margin:0 0 10px 0; font-weight:600;
+  }
+  .picker{
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .chip{
+    border:1.5px solid rgba(255,255,255,.28); background:transparent; color:#EFE3EC;
+    padding:7px 13px; border-radius:20px; font-size:13.5px; cursor:pointer;
+    transition:background .15s ease, border-color .15s ease, transform .1s ease;
+    white-space:nowrap;
+  }
+  .chip:hover{ border-color:var(--gold); }
+  .chip.active{ background:var(--gold); border-color:var(--gold); color:#3a2a10; font-weight:700; }
+  .chip:active{ transform:scale(.97); }
+
+  /* ---------------- customize (editable fields) panel ---------------- */
+  .customize-wrap{ padding:22px 6vw 4px 6vw; max-width:1180px; margin:0 auto; }
+  .customize{
+    background:var(--paper); border:1.5px solid var(--gold); border-radius:14px;
+    padding:18px 22px 20px 22px;
+  }
+  .customize-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+  .customize-head h3{ font-family:var(--serif); color:var(--maroon); font-size:18px; margin:0 0 4px 0; }
+  .customize-head p{ font-size:13px; color:var(--ink-soft); margin:0; max-width:56ch; line-height:1.5; }
+  .customize-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .mini-btn{
+    border:1.5px solid var(--line); background:var(--cream); color:var(--maroon);
+    padding:7px 12px; border-radius:8px; font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  .mini-btn:hover{ border-color:var(--gold); }
+  .field-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px 16px; }
+  .field label{ display:block; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-soft); font-weight:700; margin-bottom:4px; }
+  .field input{
+    width:100%; border:1.5px solid var(--line); border-radius:8px; padding:8px 10px;
+    font-size:13.5px; font-family:var(--sans); color:var(--ink); background:var(--cream);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .field input:focus{ outline:none; border-color:var(--teal); background:#fff; }
+  .field.two{ grid-column:span 2; }
+  .field.three{ grid-column:span 3; }
+  @media (max-width:760px){ .field-grid{ grid-template-columns:1fr 1fr; } .field.two,.field.three{ grid-column:span 2; } }
+  @media (max-width:480px){ .field-grid{ grid-template-columns:1fr; } .field.two,.field.three{ grid-column:span 1; } }
+
+  /* ---------------- trail ---------------- */
+  .trail-section{ padding:34px 6vw 8px 6vw; max-width:1180px; margin:0 auto; }
+  .trail-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:18px;}
+  .trail-head h2{ font-family:var(--serif); font-size:22px; margin:0; color:var(--maroon); }
+  .progress-pill{
+    font-size:12.5px; color:var(--ink-soft); background:var(--paper); border:1px solid var(--line);
+    padding:6px 12px; border-radius:20px;
+  }
+  .progress-pill b{ color:var(--teal); }
+
+  .trail-svg-wrap{ position:relative; }
+  svg#trailpath{ width:100%; height:auto; display:block; }
+  .trail-path-bg{ fill:none; stroke:var(--line); stroke-width:3; }
+  .trail-path-fg{ fill:none; stroke:var(--teal); stroke-width:3; stroke-dasharray:6 8; stroke-linecap:round; }
+
+  .waypoints{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-top:-58px;
+  }
+  .way{
+    background:var(--paper); border:2px solid var(--line); border-radius:14px;
+    padding:14px 10px 12px 10px; cursor:pointer; text-align:center;
+    transition:border-color .15s ease, transform .12s ease, box-shadow .15s ease;
+  }
+  .way:hover{ transform:translateY(-3px); box-shadow:0 6px 16px rgba(82,36,72,.10); }
+  .way .badge{
+    width:38px; height:38px; border-radius:50%; margin:0 auto 8px auto;
+    background:var(--paper); border:2.5px solid var(--gold); color:var(--maroon);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-weight:700; font-size:16px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .way.done .badge{ background:var(--teal); border-color:var(--teal); color:#fff; }
+  .way.active{ border-color:var(--teal); box-shadow:0 6px 18px rgba(23,121,106,.18); }
+  .way.active .badge{ background:var(--maroon); border-color:var(--maroon); color:#fff; }
+  .way .t{ font-size:13px; font-weight:700; color:var(--ink); line-height:1.25; }
+  .way .sub{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
+
+  /* ---------------- detail dock ---------------- */
+  .dock-wrap{ padding:20px 6vw 10px 6vw; max-width:1180px; margin:0 auto; }
+  .dock{
+    background:var(--paper); border:1px solid var(--line); border-radius:16px;
+    padding:26px 28px 24px 28px; box-shadow:0 10px 30px rgba(82,36,72,.06);
+  }
+  .dock-kicker{ font-size:12px; letter-spacing:.1em; color:var(--gold); font-weight:700; margin:0 0 6px 0;}
+  .dock-kicker.appendix{ color:var(--teal); }
+  .dock h3{ font-family:var(--serif); color:var(--maroon); font-size:24px; margin:0 0 10px 0; }
+  .dock p.dsc{ color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:70ch; margin:0 0 18px 0; }
+
+  .cluster-callout{
+    background:var(--teal-soft); border-left:3px solid var(--teal); border-radius:0 8px 8px 0;
+    padding:10px 14px; font-size:13.5px; color:#0f4a41; margin-bottom:18px; line-height:1.5;
+  }
+  .cluster-callout b{ color:var(--maroon); }
+
+  /* generic content grids used inside dock */
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  @media (max-width:760px){ .grid2,.grid3{ grid-template-columns:1fr; } .waypoints{ grid-template-columns:1fr; margin-top:16px; } .trail-svg-wrap{display:none;} }
+
+  .flipcard{
+    border:1.5px solid var(--line); border-radius:12px; padding:14px; cursor:pointer;
+    background:var(--cream); transition:border-color .15s ease;
+    min-height:96px; display:flex; flex-direction:column; justify-content:center;
+  }
+  .flipcard:hover{ border-color:var(--gold); }
+  .flipcard .q{ font-size:14px; color:var(--ink); font-weight:600; line-height:1.4; }
+  .flipcard .a{ display:none; font-size:13px; margin-top:8px; line-height:1.5; }
+  .flipcard.open .a{ display:block; }
+  .flipcard.open{ border-color:var(--teal); background:#fff; }
+  .verdict{ display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em; padding:2px 8px; border-radius:10px; margin-right:6px; }
+  .verdict.yes{ background:var(--teal-soft); color:#0f4a41; }
+  .verdict.no{ background:var(--rust-soft); color:#7a3520; }
+
+  .checklist{ list-style:none; margin:0; padding:0; }
+  .checklist li{
+    display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px dashed var(--line);
+    font-size:14.5px; cursor:pointer;
+  }
+  .checklist li:last-child{ border-bottom:none; }
+  .checklist .box{
+    width:19px; height:19px; min-width:19px; border:2px solid var(--gold); border-radius:5px; margin-top:2px;
+    display:flex; align-items:center; justify-content:center; font-size:12px; color:transparent;
+  }
+  .checklist li.checked .box{ background:var(--teal); border-color:var(--teal); color:#fff; }
+  .checklist li.checked span.txt{ color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--line); }
+
+  .method-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .mchip{
+    border:1.5px solid var(--line); background:var(--paper); border-radius:9px;
+    padding:8px 12px; font-size:12.5px; font-weight:600; cursor:pointer; color:var(--ink);
+  }
+  .mchip:hover{ border-color:var(--gold); }
+  .mchip.active{ background:var(--maroon); border-color:var(--maroon); color:#fff; }
+  .method-detail{
+    background:var(--cream); border-radius:10px; padding:14px 16px; font-size:14px; line-height:1.55;
+    border:1px solid var(--line);
+  }
+  .pill{ display:inline-block; background:var(--teal); color:#fff; font-size:10.5px; font-weight:800;
+         padding:2px 7px; border-radius:9px; margin-right:4px; }
+
+  .pathline{ display:flex; align-items:stretch; gap:0; margin-top:6px;}
+  .pstep{ flex:1; border:1.5px solid var(--line); padding:14px; position:relative; background:var(--paper); }
+  .pstep:first-child{ border-radius:10px 0 0 10px; }
+  .pstep:last-child{ border-radius:0 10px 10px 0; border-left:none; }
+  .pstep .tag{ font-size:11px; font-weight:800; letter-spacing:.05em; color:var(--gold); }
+  .pstep .body{ font-size:13.5px; margin-top:6px; line-height:1.5; }
+  .pstep-arrow{ display:flex; align-items:center; justify-content:center; width:26px; color:var(--ink-soft); font-size:15px; }
+
+  .rubric-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px; }
+  .ccard{
+    border:2px solid var(--line); border-radius:12px; padding:12px 10px; cursor:pointer; text-align:left;
+    background:var(--paper); transition:border-color .15s ease, background .15s ease;
+  }
+  .ccard:hover{ border-color:var(--gold); }
+  .ccard.sel{ border-color:var(--teal); background:var(--teal-soft); }
+  .ccard .code{ font-family:var(--serif); font-weight:700; color:var(--teal); font-size:18px; }
+  .ccard .name{ font-size:12.5px; font-weight:700; margin-top:2px; }
+
+  .level-track{ display:flex; gap:6px; margin-bottom:10px; }
+  .lvl-btn{
+    flex:1; padding:8px 4px; text-align:center; border-radius:8px; font-size:11.5px; font-weight:700;
+    border:1.5px solid var(--line); cursor:pointer; background:var(--paper); color:var(--ink-soft);
+  }
+  .lvl-btn.sel{ background:var(--maroon); border-color:var(--maroon); color:#fff; }
+  .level-desc{
+    background:var(--cream); border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+    font-size:14px; line-height:1.55; min-height:64px;
+  }
+
+  .cta-row{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  .btn{
+    border:none; border-radius:9px; padding:11px 18px; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .btn.primary{ background:var(--teal); color:#fff; }
+  .btn.primary:hover{ background:#106257; }
+  .btn.ghost{ background:transparent; border:1.5px solid var(--line); color:var(--ink); }
+  .btn.ghost:hover{ border-color:var(--maroon); }
+
+  /* ---------------- field notes / summary strip ---------------- */
+  .notes-wrap{ padding:6px 6vw 40px 6vw; max-width:1180px; margin:0 auto; }
+  .notes{
+    background:var(--paper); border:1px dashed var(--gold); border-radius:14px; padding:18px 22px;
+  }
+  .notes h4{ font-family:var(--serif); color:var(--maroon); font-size:16px; margin:0 0 10px 0; }
+  #notesGrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; font-size:13px; }
+  .note-item .k{ color:var(--ink-soft); font-size:11px; letter-spacing:.03em; text-transform:uppercase; }
+  .note-item .v{ font-weight:700; color:var(--ink); margin-top:2px; }
+  .note-item .v.empty{ color:#b9b0b6; font-weight:400; font-style:italic; }
+
+  footer.foot{ text-align:center; padding:18px; font-size:12px; color:var(--ink-soft); }
+
+  /* ---------------- complete course pack ---------------- */
+  .pack-wrap{ padding:6px 6vw 40px 6vw; max-width:1180px; margin:0 auto; }
+  .pack{
+    background:var(--paper); border:1.5px solid var(--maroon); border-radius:14px;
+    padding:26px 30px 28px 30px;
+  }
+  .pack-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-bottom:6px; }
+  .pack-eyebrow{ font-size:12px; letter-spacing:.1em; color:var(--gold); font-weight:700; margin:0 0 4px 0; }
+  .pack h3.pack-title{ font-family:var(--serif); color:var(--maroon); font-size:23px; margin:0 0 4px 0; }
+  .pack-sub{ font-size:13.5px; color:var(--ink-soft); margin:0 0 18px 0; max-width:70ch; line-height:1.5; }
+  .pack-context{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:8px 18px; font-size:12.5px;
+    background:var(--cream); border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:22px;
+  }
+  .pack-context .k{ color:var(--ink-soft); font-size:10.5px; letter-spacing:.03em; text-transform:uppercase; }
+  .pack-context .v{ font-weight:700; color:var(--ink); margin-top:1px; }
+  @media (max-width:760px){ .pack-context{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:480px){ .pack-context{ grid-template-columns:1fr; } }
+
+  .pack-section{ margin-bottom:26px; }
+  .pack-section:last-child{ margin-bottom:0; }
+  .pack-section .tag{ font-size:11px; letter-spacing:.1em; color:var(--teal); font-weight:800; margin:0 0 3px 0; }
+  .pack-section h4{ font-family:var(--serif); color:var(--maroon); font-size:18px; margin:0 0 8px 0; }
+  .pack-section p{ font-size:13.5px; line-height:1.6; color:var(--ink); margin:0 0 10px 0; }
+  .pack-note{
+    background:var(--gold-soft); border-left:3px solid var(--gold); border-radius:0 8px 8px 0;
+    padding:9px 13px; font-size:12.5px; color:#5c4413; margin:10px 0 0 0; line-height:1.5;
+  }
+
+  table.pack-table{ width:100%; border-collapse:collapse; margin:8px 0 4px 0; font-size:13px; }
+  table.pack-table th{ background:var(--maroon); color:#fff; text-align:left; padding:8px 10px; font-size:11.5px; letter-spacing:.03em; }
+  table.pack-table td{ padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5; }
+  table.pack-table tr:nth-child(even) td{ background:var(--cream); }
+  table.pack-table td.field-label{ font-weight:700; color:var(--maroon); width:150px; white-space:nowrap; }
+  table.pack-table td.crit-label{ font-weight:700; color:var(--teal); width:200px; }
+  table.pack-table th.lvl-col{ width:auto; }
+  td.rubric-cell{ cursor:text; transition:background .12s ease, box-shadow .12s ease; }
+  td.rubric-cell:hover{ background:#FDF8EC; }
+  td.rubric-cell:focus{ outline:none; background:#fff; box-shadow:inset 0 0 0 2px var(--teal); }
+  td.rubric-cell[data-edited="1"]{ box-shadow:inset 3px 0 0 var(--gold); }
+  td.rubric-cell[data-edited="1"]::after{ content:"edited"; display:block; font-size:9px; letter-spacing:.04em; text-transform:uppercase; color:var(--gold); margin-top:4px; font-weight:700; }
+
+  .stage-row{ display:flex; gap:0; margin-bottom:4px; }
+  .stage{ flex:1; border:1.5px solid var(--line); padding:13px 14px; background:var(--paper); }
+  .stage:first-child{ border-radius:9px 0 0 9px; }
+  .stage:last-child{ border-radius:0 9px 9px 0; border-left:none; }
+  .stage .stage-tag{ font-size:10.5px; font-weight:800; letter-spacing:.04em; color:var(--gold); display:block; margin-bottom:4px; }
+  .stage .stage-title{ font-size:13px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+  .stage p{ font-size:12.5px; margin:0 0 6px 0; }
+  .stage .stage-meta{ font-size:11px; color:var(--ink-soft); font-style:italic; }
+  @media (max-width:760px){ .stage-row{ flex-direction:column; } .stage{ border-radius:0 !important; border-left:1.5px solid var(--line) !important; border-top:none; } .stage:first-child{ border-top:1.5px solid var(--line) !important; border-radius:9px 9px 0 0 !important; } .stage:last-child{ border-radius:0 0 9px 9px !important; } }
+
+  @media print{
+    .pack{ border:none; padding:0; }
+    .pack-wrap{ padding:16px; }
+    table.pack-table{ font-size:11.5px; }
+    .no-print{ display:none !important; }
+  }
+
+  @media print{
+    .hero, .picker-wrap, .customize-wrap, .trail-section, .dock-wrap, footer.foot, .cta-row, .notes-wrap{ display:none !important; }
+    body{ background:#fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="eyebrow">SIM-ESD-NC-01 &middot; COMPANION WALKTHROUGH</p>
+  <h1>The Normative Trail</h1>
+  <p class="lead">Six waypoints from understanding Normative Competency to a module, brief and rubric you could hand a colleague tomorrow. Pick your discipline below — every stop rewrites its example to match it.</p>
+  <div class="stat-row">
+    <div class="stat"><b>6</b>waypoints</div>
+    <div class="stat"><b>14</b>disciplines</div>
+    <div class="stat"><b>4</b>fixed rubric criteria</div>
+    <div class="stat"><b>1</b>course pack, ready to print</div>
+  </div>
+</div>
+
+<div class="picker-wrap">
+  <p class="picker-label">CHOOSE YOUR TERRAIN — THIS RESETS EVERY EXAMPLE BELOW</p>
+  <div class="picker" id="picker"></div>
+</div>
+
+<div class="customize-wrap">
+  <div class="customize" id="customizePanel"><!-- injected --></div>
+</div>
+
+<div class="trail-section">
+  <div class="trail-head">
+    <h2>Your six waypoints</h2>
+    <div class="progress-pill">Visited <b id="progCount">0</b> of 6</div>
+  </div>
+  <div class="trail-svg-wrap">
+    <svg id="trailpath" viewBox="0 0 1180 70" preserveAspectRatio="none">
+      <path class="trail-path-bg" d="M 40 40 Q 200 5, 240 40 T 440 40 T 640 40 T 840 40 T 1040 40" />
+      <path class="trail-path-fg" id="trailFg" d="M 40 40 Q 200 5, 240 40 T 440 40 T 640 40 T 840 40 T 1040 40" style="stroke-dashoffset:1400;" />
+    </svg>
+  </div>
+  <div class="waypoints" id="waypoints"></div>
+</div>
+
+<div class="dock-wrap">
+  <div class="dock" id="dock"><!-- injected --></div>
+</div>
+
+<div class="notes-wrap">
+  <div class="notes">
+    <h4>Your module sketch, building as you go</h4>
+    <div id="notesGrid"></div>
+    <div class="cta-row">
+      <button class="btn primary" onclick="window.print()">Print / save the full course pack below</button>
+      <button class="btn ghost" id="resetBtn">Start over</button>
+    </div>
+  </div>
+</div>
+
+<div class="pack-wrap">
+  <div class="pack" id="coursePack"><!-- injected --></div>
+</div>
+
+<footer class="foot">Built from SIM-ESD-NC-01, The Normative Competency &middot; PEMACU ESD UPM &middot; content follows the printed guidebook — this is a companion walkthrough, not a replacement for it.</footer>
+
+<script>
+/* ============================================================
+   DATA — built from SIM-ESD-NC-01 (the 14-cluster set, the
+   11-method pedagogy bank, and the fixed C1–C4 rubric templates)
+   Each variant: topic, oa/ob (two defensible options), va/vb (the
+   value each option protects), bearer (who bears the cost),
+   harder (a harder case), objection (the strongest objection).
+   ============================================================ */
+const CLUSTERS = [
+ {id:1,name:"Health, Medical and Life Sciences",variants:[
+   {topic:"ventilator allocation in an outbreak",oa:"allocating by likely benefit",ob:"allocating by urgency of need",va:"the greatest number of lives saved",vb:"the equal worth of every patient",bearer:"the patients refused a ventilator, and their families",harder:"the neediest patient is also the least likely to recover",objection:"the admitting clinician's argument that ranking by likely benefit treats some lives as worth less"},
+   {topic:"antibiotic prescribing restraint",oa:"prescribing broad-spectrum antibiotics at the first sign of infection",ob:"a restrictive stewardship protocol",va:"certainty for the patient in front of the clinician",vb:"effective antibiotics for future patients",bearer:"future patients who inherit resistant infections",harder:"a frail patient whose infection cannot wait for culture results",objection:"the ward clinician's argument that restraint risks a preventable death today"},
+   {topic:"a population screening programme",oa:"screening the whole at-risk population",ob:"screening only high-risk groups",va:"finding every treatable case",vb:"sparing healthy people false alarms and over-treatment",bearer:"people who receive a false-positive result",harder:"a cancer whose early detection saves few lives but adds years of anxiety",objection:"patient groups' argument that restricting screening abandons those outside the high-risk criteria"},
+ ]},
+ {id:2,name:"Sciences",variants:[
+   {topic:"publishing farm-level pollution data",oa:"publishing the farm-level results in full",ob:"publishing aggregated results only",va:"openness of science and the public's right to safe water",vb:"the consent given by participating farmers",bearer:"smallholders identified as polluters",harder:"another group is about to publish the same method with farm-level data",objection:"the open-science advocate's argument that withholding the data slows the work that would protect the river"},
+   {topic:"a field trial near a village",oa:"running the trial this season",ob:"delaying until the village has been consulted",va:"timely scientific progress",vb:"the village's right to consent",bearer:"the villagers living beside the trial site",harder:"the village is divided, and its headman consents on everyone's behalf",objection:"the funder's argument that delay loses the season and the grant"},
+   {topic:"releasing a biocontrol agent",oa:"releasing the agent now",ob:"further containment testing first",va:"stopping the pest before the next harvest",vb:"precaution against an unknown ecological effect",bearer:"farmers who lose the harvest while testing continues",harder:"the agent is shown to affect one non-target native species",objection:"the growers' argument that caution protects insects and not livelihoods"},
+ ]},
+ {id:3,name:"Engineering",variants:[
+   {topic:"discharge standard selection",oa:"designing to the legal discharge limit",ob:"designing to the ecological limit",va:"the client's budget and the jobs it supports",vb:"the river and the downstream households",bearer:"the downstream households",harder:"a drought year in which the legal limit alone kills the fish stock",objection:"the client's argument that the plant will not be built and the jobs will not arrive"},
+   {topic:"a flood-defence alignment",oa:"protecting the town centre",ob:"protecting the lower-income riverside settlement",va:"the greatest economic value protected",vb:"protection for those least able to recover",bearer:"the households left outside the defence line",harder:"the riverside settlement is informal and has no legal title",objection:"the council's argument that the budget must protect the most property per ringgit"},
+   {topic:"signing off a structural design",oa:"signing off the design as compliant",ob:"refusing sign-off until a safety margin is added",va:"the client's deadline and the professional relationship",vb:"the duty to the public who will use the structure",bearer:"the future users of the building",harder:"the extra margin would make the project unaffordable and it would be cancelled",objection:"the senior engineer's argument that the design meets the code and the margin is gold-plating"},
+ ]},
+ {id:4,name:"Computer Science & IT",variants:[
+   {topic:"linking welfare and hospital records",oa:"linking the records to find unsupported households",ob:"not linking without consent",va:"timely support for eligible households",vb:"the privacy of the people described",bearer:"the people whose records could be re-identified",harder:"the linkage would find a child at risk who is otherwise invisible",objection:"the argument of the people described that they never consented and cannot withdraw"},
+   {topic:"content moderation thresholds",oa:"a strict removal threshold",ob:"a permissive threshold with labelling",va:"protecting users from harm",vb:"freedom of expression",bearer:"users whose lawful posts are wrongly removed",harder:"a post that is both harmful to some users and important evidence of wrongdoing",objection:"a civil-liberties group's argument that strict thresholds silence minority voices first"},
+   {topic:"releasing an inaccessible feature",oa:"shipping the feature on schedule",ob:"delaying until it is accessible",va:"the needs of most users now",vb:"equal access for users with disabilities",bearer:"screen-reader users locked out of the feature",harder:"the feature is the only way to complete a government service online",objection:"the product owner's argument that delay loses the contract that funds the whole team"},
+ ]},
+ {id:5,name:"Mathematics and Statistics",variants:[
+   {topic:"weighting a deprivation index",oa:"an income-led weighting",ob:"an access-led weighting",va:"priority for the lowest incomes",vb:"priority for those furthest from services",bearer:"the districts that fall out of the funded top two",harder:"the most deprived district is also the one with the least reliable data",objection:"the critic's argument that the ranking reverses under reasonable alternative weights"},
+   {topic:"the fairness definition in an allocation algorithm",oa:"equal treatment of all applicants",ob:"equal outcomes across groups",va:"one rule for every applicant",vb:"correcting a historical disadvantage",bearer:"the group disadvantaged by the chosen definition",harder:"the two definitions give opposite results for the same applicant",objection:"the argument that any group-based adjustment treats individuals unequally"},
+   {topic:"publishing an official poverty figure",oa:"a poverty line that shows higher poverty",ob:"keeping the existing, lower line",va:"honest visibility of hardship",vb:"comparability with previous years' figures",bearer:"the districts that lose funding when the line changes",harder:"the more honest line cuts funding to the poorest district",objection:"the ministry's argument that a changed line misleads the public about progress"},
+ ]},
+ {id:6,name:"Education",variants:[
+   {topic:"an assessment reform",oa:"raising the pass mark",ob:"widening the intake with a bridging term",va:"the value of the qualification",vb:"fair access for applicants from rural schools",bearer:"the learners below the raised threshold",harder:"the raised threshold falls hardest on one region's schools",objection:"the minority report's argument that a lower threshold devalues the qualification for everyone who holds it"},
+   {topic:"streaming by ability",oa:"keeping ability streams",ob:"moving to mixed-ability classes",va:"stretching the most able learners",vb:"equal regard for every learner",bearer:"learners placed in the lowest stream",harder:"the lowest stream is almost entirely one community",objection:"parents' argument that mixed classes hold able children back"},
+   {topic:"reporting a colleague's grading",oa:"reporting the grading pattern formally",ob:"raising it privately with the colleague first",va:"fairness to the students disadvantaged",vb:"collegial trust and the colleague's standing",bearer:"the students whose marks are affected",harder:"the colleague is a mentor whose career would be ended",objection:"the head of department's argument that formal reporting will poison the department"},
+ ]},
+ {id:7,name:"Economics, Business & Management",variants:[
+   {topic:"a mine's rehabilitation provision",oa:"the regulatory minimum provision",ob:"full rehabilitation for future farmland",va:"shareholder return and the jobs the project brings",vb:"the community's future use of the land",bearer:"the community after the mine closes",harder:"the company may not exist when the rehabilitation falls due",objection:"the board's argument that a larger provision makes the project unfinanceable"},
+   {topic:"choosing a supplier",oa:"the cheapest supplier with an unverified labour record",ob:"a dearer supplier with audited labour standards",va:"low prices for customers",vb:"decent work in the supply chain",bearer:"workers in the supplier's factories",harder:"the audited supplier's price would force redundancies in the retailer's own staff",objection:"the finance director's argument that customers will not pay the difference"},
+   {topic:"a restructuring plan",oa:"cutting contract workers first",ob:"spreading hours reductions across all staff",va:"protecting the core permanent workforce",vb:"fair treatment of the least secure workers",bearer:"contract workers with no severance rights",harder:"the contract workers are migrant workers who lose their permits with their jobs",objection:"the union's argument that permanent members' contracts are a promise the firm must keep"},
+ ]},
+ {id:8,name:"Language & Communication",variants:[
+   {topic:"translating a testimony that names an official",oa:"publishing the testimony whole",ob:"anonymising the official",va:"fidelity to the speaker's account",vb:"protection of the people named",bearer:"the speaker's family, who fear losing their housing",harder:"the speaker insists, again, that the name be kept",objection:"the family's argument that softening the testimony takes the story away from the person who lived it"},
+   {topic:"reporting a quote that is accurate and harmful",oa:"publishing the quote in full",ob:"paraphrasing it",va:"accuracy and the public's right to know",vb:"avoiding harm to the group the quote targets",bearer:"the community the quote vilifies",harder:"the speaker is a public official whose words are the story",objection:"the editor's argument that paraphrase is a form of censorship"},
+   {topic:"which language goes first on public signage",oa:"the national language first",ob:"the majority local language first",va:"a shared public language",vb:"recognition of the local community",bearer:"residents who cannot read the language placed first",harder:"a hospital's emergency signage",objection:"the local council's argument that signs exist to be understood by those who use them"},
+ ]},
+ {id:9,name:"Sociology, Psychology & Human Dev.",variants:[
+   {topic:"the inclusion rule in a community consultation",oa:"one resident, one vote",ob:"votes weighted by exposure to flooding",va:"equal voice for every resident",vb:"priority for those most affected",bearer:"the households in the flood-prone zone",harder:"the most affected group holds a view the majority finds unacceptable",objection:"the argument that weighting some voices more is itself a form of exclusion"},
+   {topic:"confidentiality in a counselling placement",oa:"keeping a client's disclosure confidential",ob:"breaking confidentiality to warn a third party",va:"trust between client and counsellor",vb:"protection of the person at risk",bearer:"the third party who may be harmed",harder:"the risk is serious but uncertain, and the client denies any intention",objection:"the supervisor's argument that breaking confidence ends the client's willingness to seek help"},
+   {topic:"conditions attached to welfare support",oa:"cash support with conditions",ob:"unconditional cash support",va:"encouraging school attendance and health check-ups",vb:"the dignity and autonomy of recipients",bearer:"families sanctioned for missing a condition",harder:"a family misses the condition because the only clinic is two hours away",objection:"taxpayers' argument that public money should buy agreed outcomes"},
+ ]},
+ {id:10,name:"Architecture & Built Environment",variants:[
+   {topic:"a heritage shophouse row on a housing site",oa:"demolishing for 180 affordable units",ob:"adapting the row for 64 units",va:"homes for families on the waiting list",vb:"heritage that cannot be recovered once lost",bearer:"the households left on the waiting list",harder:"the row is the last of its kind in the city",objection:"the heritage body's argument that what is demolished can never be recovered"},
+   {topic:"an accessible entrance the client wants removed",oa:"following the client's instruction",ob:"refusing to remove the accessible entrance",va:"the client's right to decide about their own building",vb:"equal access for disabled users",bearer:"wheelchair users sent to the side service door",harder:"keeping the entrance makes the ground-floor shop unviable",objection:"the client's argument that the law only requires one accessible route"},
+   {topic:"density in a redevelopment",oa:"a high-density tower scheme",ob:"a low-rise scheme with green space",va:"more homes near jobs and transport",vb:"daylight, green space and the existing street",bearer:"neighbours whose homes lose daylight",harder:"the low-rise scheme houses fewer than half the families displaced by the last clearance",objection:"existing residents' argument that newcomers' housing is being bought with their quality of life"},
+ ]},
+ {id:11,name:"Agriculture, Environmental & Food Sci.",variants:[
+   {topic:"converting a forest fragment",oa:"converting the fragment to durian",ob:"protecting it with a payment scheme",va:"members' income and debt relief",vb:"habitat and the village water source",bearer:"the forest-user households who have no vote",harder:"a bad harvest year in which members urgently need the income",objection:"the members' argument that the student does not bear the cost of protecting the forest"},
+   {topic:"culling a herd with an uncertain diagnosis",oa:"culling the whole herd now",ob:"isolating and testing before culling",va:"preventing spread to neighbouring farms",vb:"the farmer's livelihood and the animals' lives",bearer:"the smallholder whose herd is culled",harder:"the test takes three weeks and the disease spreads in one",objection:"the farmer's argument that compensation never matches the herd's real value"},
+   {topic:"a fisheries quota",oa:"cutting the quota sharply now",ob:"a phased cut over five years",va:"recovery of the fish stock",vb:"fishing households' income this year",bearer:"small-boat fishers with no other income",harder:"scientists cannot say whether the phased cut is fast enough to avoid collapse",objection:"the fishers' association's argument that a sharp cut bankrupts the fleet the stock will need later"},
+ ]},
+ {id:12,name:"Law",variants:[
+   {topic:"liability for an environmental spill",oa:"strict liability for the operator",ob:"a fault-based rule",va:"certain recovery for the injured",vb:"fairness to an operator who took every precaution",bearer:"the fish-farm operators who lost their stock",harder:"the operator is a small firm that took every available precaution",objection:"counsel for the operator's argument that liability without fault punishes a party that did nothing wrong"},
+   {topic:"a client instruction that harms a third party",oa:"following the client's lawful instruction",ob:"advising against it and withdrawing if refused",va:"the duty of loyalty to the client",vb:"avoiding harm to the third party",bearer:"the tenant who would be evicted",harder:"withdrawing leaves the client unrepresented at the hearing",objection:"the client's argument that a lawyer's job is to act on lawful instructions, not to judge them"},
+   {topic:"customary and statutory land claims",oa:"recognising registered title only",ob:"recognising the customary claim",va:"legal certainty for registered owners",vb:"the community's long-standing use of the land",bearer:"the customary users with no registered title",harder:"the customary claim overlaps a smallholder's registered plot",objection:"the registered owner's argument that recognition makes every title insecure"},
+ ]},
+ {id:13,name:"Arts and Humanities",variants:[
+   {topic:"returning a contested textile collection",oa:"returning the collection to the source community",ob:"retaining it with community access",va:"the community's control of its own heritage",vb:"access for a wide public, and conservation",bearer:"the public who lose access, or the community whose loss continues",harder:"a second community claims six of the textiles",objection:"the source community's argument that \u201Caccess for all\u201D has meant access for everyone except them"},
+   {topic:"displaying human remains",oa:"keeping the remains on display",ob:"withdrawing them from display",va:"public education about the past",vb:"the dignity of the dead and their descendants",bearer:"the descendants who object to the display",harder:"no descendants can be identified",objection:"educators' argument that removing the remains erases a history the public needs to see"},
+   {topic:"the label on a contested object",oa:"the museum's scholarly interpretation",ob:"the source community's own account",va:"scholarly accuracy",vb:"the community's right to tell its own story",bearer:"the community whose account is left off the label",harder:"the community's account conflicts with the documentary record",objection:"the curator's argument that a label must reflect the evidence, not preference"},
+ ]},
+ {id:14,name:"Hospitality, Tourism & Sport",variants:[
+   {topic:"a visitor cap for a heritage town",oa:"a cap on daily visitors",ob:"a tourist levy without a cap",va:"residents' right to a liveable place",vb:"operators' livelihoods and visitors' access",bearer:"seasonal staff whose hours fall",harder:"the cap would close the family businesses that employ most residents",objection:"the operators' argument that a cap protects residents who own property at the expense of those who work there"},
+   {topic:"a peak-season staff roster",oa:"a roster that meets demand by breaking rest rules",ob:"turning away bookings to keep rest rules",va:"guest service and the hotel's revenue",vb:"staff health and legal rest",bearer:"the housekeeping staff on split shifts",harder:"the staff themselves ask for the extra shifts because they need the pay",objection:"the general manager's argument that lost bookings mean lost jobs in the low season"},
+   {topic:"a bid for a major sports event",oa:"bidding for the event",ob:"not bidding and investing in local facilities",va:"national prestige and tourism income",vb:"residents' housing and public budgets",bearer:"residents displaced for event venues",harder:"the displaced residents are promised rehousing that past events never delivered",objection:"the tourism board's argument that the event brings investment no other project can"},
+ ]},
+];
+
+const METHODS = [
+ {code:"M1",name:"Case-Based Learning",crit:["C1","C2","C3","C4"],family:"Inquiry family",
+  tmpl:(c)=>`An unseen case on ${c.topic}: the class must choose between ${c.oa} and ${c.ob}. The data are complete enough to decide, and they do not settle the choice.`,
+  run:"Two tutorials of 90 minutes, two weeks apart. Tutorial A works through the case and maps who is affected; tutorial B makes and defends the decision.",
+  evidence:"A two-page justification memo: the values in conflict, who bears the cost and who is protected, the principle applied, the strongest objection answered.",
+  watch:"Marking the technical analysis marks the discipline, not the competency. Mark the justification memo."},
+ {code:"M2",name:"Socratic Seminar",crit:["C3","C4"],family:"Inquiry family",
+  tmpl:(c)=>`A seminar on a text about ${c.topic}: is ${c.oa} or ${c.ob} right, and what principle decides it? Both readings are defensible, so the seminar cannot end by finding the correct one.`,
+  run:"One seminar of 90 minutes; position paper drafted before, revised within one week after.",
+  evidence:"A position paper written after the seminar and revised in its light: the principle I held, the question that tested it, what I kept and what I changed.",
+  watch:"Seminars reward fluent speakers. Mark only the revised position paper, and mark what changed."},
+ {code:"M3",name:"SULAM / Service Learning",crit:["C1","C2"],family:"Experiential family",
+  tmpl:(c)=>`A community engagement on ${c.topic} with a real partner. Whatever is chosen, the consequence falls hardest on ${c.bearer}, and the partner holds more formal say than they do.`,
+  run:"Problem definition with the partner, several weeks of fieldwork, a review with both groups present, then a decision note.",
+  evidence:"Five journal entries to set prompts, plus a decision note: whose definition of the need I adopted, who bears the cost of the service as designed, and on what principle.",
+  watch:"Gratitude from the partner is not evidence. Mark the decision note, never the warmth of the journal."},
+ {code:"M4",name:"Place-Based Learning",crit:["C1","C2"],family:"Experiential family",
+  tmpl:(c)=>`One local place shaped by ${c.topic}: students study it over several weeks, then decide between ${c.oa} and ${c.ob} for that place.`,
+  run:"Six weeks: two site visits, two interviews with people who use the place, one mapping session, one decision workshop.",
+  evidence:"A place account a local resident would recognise, ending in a decision: what should happen here, on what principle, who pays, and who would object most.",
+  watch:"Place accounts drift into description. The account must end in a decision, or it evidences nothing."},
+ {code:"M5",name:"Clinical / Practicum",crit:["C1","C3","C4"],family:"Experiential family",
+  tmpl:(c)=>`A supervised placement decision on ${c.topic}, where the team leans towards ${c.oa} and the student may judge that ${c.ob} is right.`,
+  run:"Across the placement; one case note submitted mid-placement for feedback, one at the end for marking.",
+  evidence:"A case note with a justification section: the decision taken or observed, the values in conflict, the principle, and the supervisor's challenge answered.",
+  watch:"Students write what the supervisor wants to hear. Mark the reasoning, and never mark agreement with the supervisor."},
+ {code:"M6",name:"Role-Play",crit:["C1","C4"],family:"Simulation family",
+  tmpl:(c)=>`A meeting in role on ${c.topic}: one role defends ${c.va}, another ${c.vb}, and one speaks for ${c.bearer}. No statement can honour every role's value.`,
+  run:"20 minutes preparation, 50 minutes in role, 20 minutes debrief conducted out of role.",
+  evidence:"A justification written afterwards, out of role: the values beneath my role's position, who it cost, the principle I would defend outside the role, and the argument that tested it.",
+  watch:"Performance skill is not competence. A confident speaker with a shifting principle must not score highly. Mark the written justification."},
+ {code:"M7",name:"Negotiation / Mock Hearing",crit:["C3","C4"],family:"Simulation family",
+  tmpl:(c)=>`A hearing on ${c.topic}: parties argue for ${c.oa} and for ${c.ob} under confidential limits; agreement needs at least two parties to concede a stated priority.`,
+  run:"15 minutes briefing, 20 minutes separate preparation, 45 minutes negotiation, 10 minutes drafting, 20 minutes debrief.",
+  evidence:"A concession log, plus a one-page memo: the principle I would not concede and why, the point I did concede, and who bore it.",
+  watch:"If one party wins outright, the briefs were set wrongly. Check that room for agreement exists before running it."},
+ {code:"M8",name:"Serious Games",crit:["C2","C3"],family:"Simulation family",
+  tmpl:(c)=>`A game in rounds on ${c.topic}: each round forces a choice between ${c.va} and ${c.vb}, and the score rewards whichever rule the game happens to favour.`,
+  run:"Five rounds of 10 minutes, then a 30-minute debrief and a written debrief within the week.",
+  evidence:"A debrief, never the score: the rule I played by, who it cost inside the game, and whether I would defend that rule outside it.",
+  watch:"Points measure play, not competence. The debrief carries the evidence; timetable it properly."},
+ {code:"M9",name:"Structured Academic Controversy",crit:["C3","C4"],family:"Dialogue family",
+  tmpl:(c)=>`Pairs argue for ${c.oa}, then for ${c.ob}; a pair may not switch until the other accepts its restatement of their case. Then they seek a joint principle.`,
+  run:"15 minutes preparation, 10 minutes each side presents, 10 minutes each side restates the other's case, 20 minutes with sides switched, 20 minutes roles dropped, 15 minutes writing.",
+  evidence:"A statement: the strongest argument on the side I did not start on, the principle I now hold, and a harder case in which it still holds.",
+  watch:"The restatement step is where the counter-position lives, and it is the step cut when running late. Never grade the position held."},
+ {code:"M10",name:"Deliberative Forum",crit:["C2","C4"],family:"Dialogue family",
+  tmpl:(c)=>`A citizens' panel on ${c.topic} weighs ${c.oa} against ${c.ob} from briefing papers of equal quality, and must produce a minority report.`,
+  run:"30 minutes reading, 40 minutes questioning witnesses, 40 minutes table discussion, 30 minutes drafting the recommendation, 20 minutes drafting the minority report.",
+  evidence:"A statement: the option I entered with and left with, the principle I applied, and whether I signed the recommendation or the minority report, and why.",
+  watch:"The minority report is the device that stops the panel rewarding conformity. Require at least one member per table to be able to sign it."},
+ {code:"M11",name:"Multi-Criteria Decision Analysis",crit:["C1","C3"],family:"Analytical family",
+  tmpl:(c)=>`Students weight ${c.va} against ${c.vb} in a decision matrix for ${c.topic}, then re-run it under the weights their strongest critic would choose.`,
+  run:"One 90-minute workshop to build the matrix, one week to write the justification, one 30-minute session re-running it under an opponent's weights.",
+  evidence:"A weighted decision matrix plus a one-page justification of the weights: whose values each weight encodes, who the chosen option disadvantages, and what changes under the critic's weights.",
+  watch:"Weights chosen to produce a preferred answer are a disguised preference. The re-run under the critic's weights is what exposes it."},
+];
+
+const RUBRIC = {
+ C1:{name:"Surfacing values", q:"Can the student name the values in conflict — including their own — rather than only the options?",
+   levels:[
+     (c)=>`Presents the decision on ${c.topic} as purely technical.`,
+     (c)=>`Mentions fairness without naming the values in conflict between ${c.oa} and ${c.ob}.`,
+     (c)=>`Names the values in conflict: ${c.va} against ${c.vb}.`,
+     (c)=>`Names ${c.va} and ${c.vb}, including which one the student's own training leads them to put first, and shows how that shaped the choice.`]},
+ C2:{name:"Distribution of cost and benefit", q:"Can the student state who bears the cost of the decision, who is protected, and how that falls over time?",
+   levels:[
+     (c)=>`Does not say who gains or who loses from the decision on ${c.topic}.`,
+     (c)=>`States who loses — for example ${c.bearer} — but not who gains.`,
+     (c)=>`States who bears the cost of the chosen option, including ${c.bearer}, and who is protected by it.`,
+     (c)=>`Analyses how cost and benefit fall across groups, including ${c.bearer}, and over time.`]},
+ C3:{name:"Principled justification", q:"Does the student apply one explicit principle consistently across every option, including a harder case?",
+   levels:[
+     (c)=>`States a preference for ${c.oa} or ${c.ob} with no reason.`,
+     (c)=>`Gives reasons, but the criteria shift between ${c.oa} and ${c.ob}.`,
+     (c)=>`Applies one explicit principle consistently to both ${c.oa} and ${c.ob}.`,
+     (c)=>`Applies it, and shows the principle still holds in a harder case: ${c.harder}.`]},
+ C4:{name:"Engaging the counter-position", q:"Does the student state the strongest objection fairly and respond without abandoning the principle?",
+   levels:[
+     (c)=>`Ignores any opposing view on ${c.topic}.`,
+     (c)=>`Acknowledges that someone would object, but does not engage the objection.`,
+     (c)=>`States the strongest objection fairly: ${c.objection}.`,
+     (c)=>`States ${c.objection}, and responds with reason without abandoning the principle.`]},
+};
+
+const LEVEL_LABELS = ["1 Limited","2 Developing","3 Proficient","4 Exemplary"];
+
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function poss(s){ return /s$/i.test(s) ? s+"'" : s+"'s"; }
+
+/* ============================================================
+   STATE
+   state.cluster is a MUTABLE EDITABLE COPY (name + the six fields).
+   state.activeCluster/variantIndex track which preset it started from,
+   so "Reset" and "Try another example" have something clean to return to.
+   ============================================================ */
+function makeFields(clusterDef, variantIndex){
+  return { name: clusterDef.name, ...clusterDef.variants[variantIndex] };
+}
+let state = {
+  activeCluster: CLUSTERS[2], // default: Engineering — matches the guidebook's own sample assessment plan (4.4)
+  variantIndex: 0,
+  cluster: makeFields(CLUSTERS[2], 0),
+  activeWay: 1,
+  visited: new Set(),
+  chosenMethod: null,
+  chosenCriterion: "C1",
+  chosenLevel: 2, // 0-indexed -> "3 Proficient" shown by default
+  checklist: {},
+  rubricOverrides: {}, // key "C1_0".."C4_3" -> custom-edited descriptor text, overrides the live-generated wording
+};
+
+const WAYS = [
+ {id:1, badge:"1", t:"Understand NC", sub:"What it actually means"},
+ {id:2, badge:"2", t:"Find the value conflict", sub:"Your course, your topic"},
+ {id:3, badge:"3", t:"Choose the pedagogy", sub:"Eleven methods to pick from"},
+ {id:4, badge:"4", t:"Practice twice", sub:"Component, then integrated"},
+ {id:5, badge:"5", t:"Design the rubric", sub:"C1 to C4, four levels"},
+ {id:6, badge:"6", t:"Implement & moderate", sub:"Ship it, then check it"},
+];
+
+/* ============================================================
+   RENDER: cluster picker
+   ============================================================ */
+function renderPicker(){
+  const el = document.getElementById("picker");
+  el.innerHTML = "";
+  CLUSTERS.forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "chip" + (c.id===state.activeCluster.id ? " active" : "");
+    b.textContent = c.name;
+    b.setAttribute("aria-pressed", c.id===state.activeCluster.id ? "true":"false");
+    b.onclick = ()=>{ state.activeCluster = c; state.variantIndex = 0; state.cluster = makeFields(c, 0); state.chosenMethod=null; renderAll(); };
+    el.appendChild(b);
+  });
+}
+
+/* ============================================================
+   RENDER: the customize panel (editable fields)
+   Typing here mutates state.cluster directly and calls refreshDependents()
+   only — never re-renders this panel itself, so focus/cursor is untouched.
+   ============================================================ */
+const FIELD_DEFS = [
+  {key:"topic",     label:"Topic with a real decision",        cls:"two"},
+  {key:"bearer",    label:"Who bears the cost",                cls:""},
+  {key:"oa",        label:"Option A",                          cls:""},
+  {key:"va",        label:"Value option A protects",           cls:"two"},
+  {key:"ob",        label:"Option B",                          cls:""},
+  {key:"vb",        label:"Value option B protects",           cls:"two"},
+  {key:"harder",    label:"Harder case (tests the principle)", cls:"three"},
+  {key:"objection", label:"Strongest objection",               cls:"three"},
+];
+function renderCustomize(){
+  const wrap = document.getElementById("customizePanel");
+  const nVariants = state.activeCluster.variants.length;
+  wrap.innerHTML = `
+    <div class="customize-head">
+      <div>
+        <h3>Tailor this to your own course</h3>
+        <p>Every field below feeds the whole trail below it. Type over any example text with your own course's decision, its two defensible options and the values behind them — the method scenarios, the brief and the rubric all update as you type.</p>
+      </div>
+      <div class="customize-actions">
+        <span class="progress-pill" style="align-self:center;">Example <b>${state.variantIndex+1}</b> of ${nVariants}</span>
+        <button class="mini-btn" id="shuffleBtn" type="button">Try another example</button>
+        <button class="mini-btn" id="undoBtn" type="button">&#8630; Undo my edits</button>
+      </div>
+    </div>
+    <div class="field-grid" id="fieldGrid"></div>
+  `;
+  const grid = document.getElementById("fieldGrid");
+  FIELD_DEFS.forEach(fd=>{
+    const d = document.createElement("div");
+    d.className = "field" + (fd.cls ? " "+fd.cls : "");
+    const inputId = "fld_"+fd.key;
+    d.innerHTML = `<label for="${inputId}">${fd.label}</label><input id="${inputId}" type="text" value="${escapeAttr(state.cluster[fd.key])}" autocomplete="off" spellcheck="false">`;
+    grid.appendChild(d);
+  });
+  FIELD_DEFS.forEach(fd=>{
+    document.getElementById("fld_"+fd.key).addEventListener("input", (e)=>{
+      state.cluster[fd.key] = e.target.value;
+      refreshDependents();
+    });
+  });
+  document.getElementById("shuffleBtn").onclick = ()=>{
+    state.variantIndex = (state.variantIndex + 1) % nVariants;
+    state.cluster = makeFields(state.activeCluster, state.variantIndex);
+    state.chosenMethod = null;
+    renderCustomize();
+    refreshDependents();
+  };
+  document.getElementById("undoBtn").onclick = ()=>{
+    state.cluster = makeFields(state.activeCluster, state.variantIndex);
+    renderCustomize();
+    refreshDependents();
+  };
+}
+function escapeAttr(s){
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+}
+/* re-render everything that DISPLAYS the fields, without touching the
+   input fields themselves (so typing never loses focus or cursor position) */
+function refreshDependents(){
+  renderWaypoints(); // waypoint sub-labels don't show field text, but keep trail progress in sync
+  renderDock();
+  renderNotes();
+  renderCoursePack();
+}
+
+/* ============================================================
+   RENDER: waypoints + trail progress
+   ============================================================ */
+function renderWaypoints(){
+  const el = document.getElementById("waypoints");
+  el.innerHTML = "";
+  WAYS.forEach(w=>{
+    const done = state.visited.has(w.id);
+    const active = state.activeWay === w.id;
+    const d = document.createElement("button");
+    d.className = "way" + (done?" done":"") + (active?" active":"");
+    d.setAttribute("aria-current", active ? "step" : "false");
+    d.innerHTML = `<div class="badge">${done?"&#10003;":w.badge}</div><div class="t">${w.t}</div><div class="sub">${w.sub}</div>`;
+    d.onclick = ()=>{ state.activeWay = w.id; state.visited.add(w.id); renderAll(); document.getElementById("dock").scrollIntoView({behavior:"smooth", block:"start"}); };
+    el.appendChild(d);
+  });
+  document.getElementById("progCount").textContent = state.visited.size;
+  const pct = state.visited.size/6;
+  const fg = document.getElementById("trailFg");
+  const totalLen = 1400;
+  fg.style.strokeDashoffset = Math.max(0, totalLen - totalLen*pct);
+}
+
+/* ============================================================
+   RENDER: the dock (per-waypoint content)
+   ============================================================ */
+function renderDock(){
+  const c = state.cluster;
+  const dock = document.getElementById("dock");
+  state.visited.add(state.activeWay);
+  let html = "";
+
+  if(state.activeWay===1){
+    html += `<p class="dock-kicker">WAYPOINT 1</p><h3>What Normative Competency actually means</h3>
+    <p class="dsc">Four things distinguish it from talking about ethics: the values in conflict named, including the student's own; who bears the cost of the decision; one principle applied consistently; and the strongest objection answered. The mark never depends on which side the student takes. Click each card below to check yourself.</p>
+    <div class="grid2" id="spotcards"></div>`;
+  }
+  else if(state.activeWay===2){
+    html += `<p class="dock-kicker">WAYPOINT 2</p><h3>Find the value conflict</h3>
+    <p class="dsc">Normative Competency cannot be practised on a problem with one right answer. It needs a decision on which informed people hold defensible values that point in different directions. Run your own topic through these four questions.</p>
+    <div class="cluster-callout"><b>${c.name} example</b> &mdash; topic: <b>${c.topic}</b>. Option A, <b>${c.oa}</b>, protects <b>${c.va}</b>. Option B, <b>${c.ob}</b>, protects <b>${c.vb}</b>. Who bears the cost: <b>${c.bearer}</b>.</div>
+    <ul class="checklist" id="q4list"></ul>
+    <p class="small" style="margin-top:10px;">If question 3 fails, the topic is technical. A decision that more data or a better calculation would settle is an optimisation, not a value conflict. Choose another week.</p>`;
+  }
+  else if(state.activeWay===3){
+    html += `<p class="dock-kicker">WAYPOINT 3</p><h3>Choose the pedagogy</h3>
+    <p class="dsc">Eleven methods, each shaped to evidence different criteria. Click a method to see it applied to <b>${c.name}</b>. Whatever the method, each student leaves with a decision and the principle behind it, in writing.</p>
+    <div class="method-chips" id="methodChips"></div>
+    <div class="method-detail" id="methodDetail"></div>`;
+  }
+  else if(state.activeWay===4){
+    html += `<p class="dock-kicker">WAYPOINT 4</p><h3>Practice twice, then assess</h3>
+    <p class="dsc">One component practice, one integrated practice, feedback between — this is what turns an activity into a capability, for <b>${c.name}</b>. The commonest feedback sentence: &ldquo;Your principle changed between option A and option B.&rdquo;</p>
+    <div class="pathline">
+      <div class="pstep"><div class="tag">PRACTICE 1 &middot; COMPONENT</div><div class="body">Name the value behind ${c.oa} and behind ${c.ob}, and state who bears the cost of each &mdash; including ${c.bearer}. <i>C1 and C2 only, light feedback.</i></div></div>
+      <div class="pstep-arrow">&rarr;</div>
+      <div class="pstep"><div class="tag">PRACTICE 2 &middot; INTEGRATED</div><div class="body">Decide on one stated principle, test it on a harder case &mdash; ${c.harder} &mdash; and answer ${c.objection}. <i>C1&ndash;C4, feedback before grading.</i></div></div>
+    </div>`;
+  }
+  else if(state.activeWay===5){
+    html += `<p class="dock-kicker">WAYPOINT 5</p><h3>Design the rubric: C1 to C4</h3>
+    <p class="dsc">Four fixed criteria, four fixed levels — identical in every course. Click a criterion, then slide through its levels to see how the assessment for <b>${c.topic}</b> gets stronger. In the values competencies the levels read: asserts &rarr; reasons &rarr; applies a principle &rarr; withstands challenge.</p>
+    <div class="rubric-row" id="critCards"></div>
+    <div class="level-track" id="levelTrack"></div>
+    <div class="level-desc" id="levelDesc"></div>`;
+  }
+  else if(state.activeWay===6){
+    html += `<p class="dock-kicker appendix">WAYPOINT 6</p><h3 style="color:var(--teal)">Implement, moderate, improve</h3>
+    <p class="dsc">Before this goes live for ${c.name}, run it past five safeguards. Tick what's true today. Two students who reach opposite decisions must be able to reach the same level.</p>
+    <ul class="checklist" id="modlist"></ul>`;
+  }
+
+  dock.innerHTML = html;
+
+  if(state.activeWay===1) renderSpotCards();
+  if(state.activeWay===2) renderQ4();
+  if(state.activeWay===3) renderMethods();
+  if(state.activeWay===5) renderRubric();
+  if(state.activeWay===6) renderModList();
+}
+
+/* ---- waypoint 1: spot-the-difference cards ---- */
+const SPOT_ITEMS = [
+ {q:"Students explain the difference between utilitarian and deontological ethics, with an example.", yes:false, why:"Ethics knowledge. The student describes theories without making a decision \u2014 not yet Normative Competency."},
+ {q:"Each student chooses between two defensible options, states the principle before the choice, and answers the strongest objection to it.", yes:true, why:"A decision, a principle applied, and a counter-position met \u2014 criteria 3 and 4 are both present."},
+ {q:"Memos are marked higher when they recommend the more sustainable option.", yes:false, why:"This marks the position, not the reasoning. A student on the other side with better reasoning is penalised."},
+ {q:"Each student states who bears the cost of their decision and who is protected by it, now and over time.", yes:true, why:"Distribution of cost and benefit \u2014 criterion 2, at the level 4 move of tracing it over time."},
+];
+function renderSpotCards(){
+  const el = document.getElementById("spotcards");
+  el.innerHTML = "";
+  SPOT_ITEMS.forEach(item=>{
+    const d = document.createElement("div");
+    d.className = "flipcard";
+    d.innerHTML = `<div class="q">${item.q}</div><div class="a"><span class="verdict ${item.yes?'yes':'no'}">${item.yes?'NORMATIVE':'NOT YET'}</span>${item.why}</div>`;
+    d.onclick = ()=> d.classList.toggle("open");
+    el.appendChild(d);
+  });
+}
+
+/* ---- waypoint 2: 4-question checklist ---- */
+const Q4 = [
+  "Name one topic you already teach.",
+  "What decision has to be made about it? Name at least two options.",
+  "Which values point to different options? State it in one sentence.",
+  "Who bears the cost of each option, and who is protected? That is where C2 enters.",
+];
+function renderQ4(){
+  const el = document.getElementById("q4list");
+  el.innerHTML = "";
+  Q4.forEach((q,i)=>{
+    const li = document.createElement("li");
+    const key = "q4_"+i;
+    if(state.checklist[key]) li.classList.add("checked");
+    li.innerHTML = `<div class="box">&#10003;</div><span class="txt">${q}</span>`;
+    li.onclick = ()=>{ state.checklist[key] = !state.checklist[key]; renderQ4(); };
+    el.appendChild(li);
+  });
+}
+
+/* ---- waypoint 3: method bank ---- */
+function renderMethods(){
+  const el = document.getElementById("methodChips");
+  el.innerHTML = "";
+  METHODS.forEach(m=>{
+    const b = document.createElement("button");
+    b.className = "mchip" + (state.chosenMethod===m.code ? " active":"");
+    b.textContent = m.code+" "+m.name;
+    b.onclick = ()=>{ state.chosenMethod = m.code; renderDock(); renderNotes(); renderCoursePack(); };
+    el.appendChild(b);
+  });
+  const m = METHODS.find(x=>x.code===state.chosenMethod) || METHODS[0];
+  if(!state.chosenMethod) state.chosenMethod = m.code;
+  const detail = document.getElementById("methodDetail");
+  const pills = m.crit.map(x=>`<span class="pill">${x}</span>`).join("");
+  detail.innerHTML = `<div style="margin-bottom:8px;">${pills}</div>${m.tmpl(state.cluster)}`;
+}
+
+/* ---- waypoint 5: rubric ---- */
+function renderRubric(){
+  const el = document.getElementById("critCards");
+  el.innerHTML = "";
+  Object.keys(RUBRIC).forEach(code=>{
+    const r = RUBRIC[code];
+    const d = document.createElement("button");
+    d.className = "ccard" + (state.chosenCriterion===code ? " sel":"");
+    d.innerHTML = `<div class="code">${code}</div><div class="name">${r.name}</div>`;
+    d.onclick = ()=>{ state.chosenCriterion = code; renderRubric(); };
+    el.appendChild(d);
+  });
+  const track = document.getElementById("levelTrack");
+  track.innerHTML = "";
+  LEVEL_LABELS.forEach((lab,i)=>{
+    const b = document.createElement("button");
+    b.className = "lvl-btn" + (state.chosenLevel===i ? " sel":"");
+    b.textContent = lab;
+    b.onclick = ()=>{ state.chosenLevel = i; renderRubric(); };
+    track.appendChild(b);
+  });
+  const r = RUBRIC[state.chosenCriterion];
+  document.getElementById("levelDesc").innerHTML =
+    `<b>${r.q}</b><br><br>${r.levels[state.chosenLevel](state.cluster)}`;
+}
+
+/* ---- waypoint 6: moderation checklist ---- */
+const MODS = [
+  "Rubric published with the brief, before submission, and the date recorded.",
+  "Two markers calibrated on the same scripts before marking began, including one from each side of the decision.",
+  "Ten per cent plus all borderline cases second-marked.",
+  "Marks checked against the decision taken: if one side scores systematically higher, the scripts are re-read.",
+  "One anonymised exemplar kept per level.",
+];
+function renderModList(){
+  const el = document.getElementById("modlist");
+  el.innerHTML = "";
+  MODS.forEach((q,i)=>{
+    const li = document.createElement("li");
+    const key = "mod_"+i;
+    if(state.checklist[key]) li.classList.add("checked");
+    li.innerHTML = `<div class="box">&#10003;</div><span class="txt">${q}</span>`;
+    li.onclick = ()=>{ state.checklist[key] = !state.checklist[key]; renderModList(); };
+    el.appendChild(li);
+  });
+}
+
+/* ============================================================
+   RENDER: field notes (the living module sketch)
+   ============================================================ */
+function renderNotes(){
+  const c = state.cluster;
+  const method = METHODS.find(m=>m.code===state.chosenMethod);
+  const items = [
+    ["Discipline", c.name],
+    ["Topic", cap(c.topic)],
+    ["Value conflict", state.visited.has(2) ? `${c.va} vs ${c.vb}` : null],
+    ["Who bears the cost", state.visited.has(2) ? cap(c.bearer) : null],
+    ["Chosen pedagogy", method ? `${method.code} ${method.name}` : null],
+    ["Rubric criterion explored", state.visited.has(5) ? `${state.chosenCriterion} — ${RUBRIC[state.chosenCriterion].name}` : null],
+  ];
+  const grid = document.getElementById("notesGrid");
+  grid.innerHTML = "";
+  items.forEach(([k,v])=>{
+    const d = document.createElement("div");
+    d.className="note-item";
+    d.innerHTML = `<div class="k">${k}</div><div class="v${v?'':' empty'}">${v || "— visit that waypoint —"}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+/* ============================================================
+   RENDER: the complete course pack — pedagogy + activities plan +
+   3-criterion rubric, all generated live from state.cluster and the
+   chosen method. This is the actual ready-to-use deliverable; the
+   trail above exists to help build the fields that feed it.
+   ============================================================ */
+function renderCoursePack(){
+  const c = state.cluster;
+  const method = METHODS.find(m=>m.code===state.chosenMethod) || METHODS[0];
+  const pack = document.getElementById("coursePack");
+
+  // ---- context recap ----
+  const contextItems = [
+    ["Discipline", c.name],
+    ["Topic", cap(c.topic)],
+    ["Option A", cap(c.oa)],
+    ["Option B", cap(c.ob)],
+    ["Value A protects", cap(c.va)],
+    ["Value B protects", cap(c.vb)],
+  ];
+  const contextHTML = contextItems.map(([k,v])=>
+    `<div><div class="k">${k}</div><div class="v">${v}</div></div>`
+  ).join("");
+
+  // ---- 1. pedagogy ----
+  const critPills = method.crit.map(x=>`<span class="pill">${x}</span>`).join(" ");
+  const pedagogyRows = [
+    ["Method", `${method.code} &mdash; ${method.name} <span class="small" style="font-weight:400;color:var(--ink-soft);">(${method.family})</span>`],
+    ["Situation for this course", method.tmpl(c)],
+    ["Run and timing", method.run],
+    ["Individual evidence required", method.evidence],
+    ["Rubric criteria it evidences", critPills],
+  ].map(([label,val])=>`<tr><td class="field-label">${label}</td><td>${val}</td></tr>`).join("");
+
+  // ---- 2. learning activities plan (3 stages) ----
+  const critList = method.crit.join(", ");
+  const stagesHTML = `
+    <div class="stage-row">
+      ${stageData(c, method, critList).map(([tag,title,body,meta])=>`
+      <div class="stage">
+        <span class="stage-tag">${tag}</span>
+        <div class="stage-title">${title}</div>
+        <p>${body}</p>
+        <div class="stage-meta">${meta}</div>
+      </div>`).join("")}
+    </div>`;
+  const briefHTML = briefItems(c).map(([cl,cr,txt])=>`<tr><td class="field-label">${cl} &rarr; ${cr}</td><td>${txt}</td></tr>`).join("");
+
+  // ---- 3. rubric (fixed 4 criteria, C1–C4) — every descriptor cell is directly editable ----
+  const rubricRows = Object.keys(RUBRIC).map(code=>{
+    const r = RUBRIC[code];
+    const levelCells = r.levels.map((lvlFn,i)=>{
+      const key = `${code}_${i}`;
+      const custom = state.rubricOverrides[key];
+      const text = (custom !== undefined && custom !== null) ? custom : lvlFn(c);
+      const editedFlag = (custom !== undefined && custom !== null) ? ' data-edited="1"' : '';
+      return `<td class="rubric-cell" contenteditable="true" spellcheck="false" data-key="${key}"${editedFlag}>${text}</td>`;
+    }).join("");
+    return `<tr><td class="crit-label">${code}<br><span style="font-weight:400;color:var(--ink);">${r.name}</span></td>${levelCells}</tr>`;
+  }).join("");
+
+  pack.innerHTML = `
+    <div class="pack-top">
+      <div>
+        <p class="pack-eyebrow">YOUR COMPLETE COURSE PACK</p>
+        <h3 class="pack-title">${cap(c.topic)} &mdash; ${c.name}</h3>
+        <p class="pack-sub">Generated live from the fields above. Edit any field above, or any rubric cell below, and this pack updates. Download it when it's ready.</p>
+      </div>
+    </div>
+    <div class="pack-context">${contextHTML}</div>
+
+    <div class="pack-section">
+      <p class="tag">1 &middot; PEDAGOGY</p>
+      <h4>${method.code} ${method.name}</h4>
+      <table class="pack-table">${pedagogyRows}</table>
+      <div class="pack-note"><b>Watch out.</b> ${method.watch}</div>
+    </div>
+
+    <div class="pack-section">
+      <p class="tag">2 &middot; LEARNING ACTIVITIES PLAN</p>
+      <h4>Practice twice, then assess</h4>
+      ${stagesHTML}
+    </div>
+
+    <div class="pack-section">
+      <p class="tag">3 &middot; ASSIGNMENT BRIEF &middot; FOUR CLAUSES</p>
+      <h4>The individual justification the student submits</h4>
+      <p class="small" style="margin:4px 0 8px 0;">One clause per criterion. Write the principle in the first paragraph, before the decision. The student may choose either option.</p>
+      <table class="pack-table">${briefHTML}</table>
+      <div class="pack-note"><b>Position-neutral.</b> Marked on the reasoning, never on which option the student chooses. Two students who reach opposite decisions can both reach level 4.</div>
+    </div>
+
+    <div class="pack-section">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+        <div>
+          <p class="tag">4 &middot; RUBRIC &middot; FOUR FIXED CRITERIA, C1 TO C4</p>
+          <h4 style="margin-bottom:0;">Marking guide for the assessed task</h4>
+        </div>
+        <button class="mini-btn no-print" id="resetRubricBtn" type="button">&#8630; Reset rubric wording</button>
+      </div>
+      <p class="small" style="margin:4px 0 8px 0;">Built on the generic rubric in SIM-ESD-NC-01, section 5.5.2, with descriptors adapted to your fields. The four criteria and four level names are fixed university-wide for PLO12 attainment reporting. <b>Click any descriptor cell to edit its wording directly</b>; your edits are kept even as you change fields above.</p>
+      <table class="pack-table" id="rubricTable">
+        <thead><tr><th>Criterion</th><th class="lvl-col">1 Limited</th><th class="lvl-col">2 Developing</th><th class="lvl-col">3 Proficient</th><th class="lvl-col">4 Exemplary</th></tr></thead>
+        <tbody>${rubricRows}</tbody>
+      </table>
+    </div>
+
+    <div class="pack-section no-print">
+      <p class="tag">DOWNLOAD</p>
+      <h4 style="margin-bottom:10px;">Take this pack to your course</h4>
+      <div class="cta-row" style="margin-top:0;">
+        <button class="btn primary" id="downloadWordBtn" type="button">&#11015; Download as Word (.doc)</button>
+        <button class="btn ghost" id="downloadPdfBtn" type="button">&#11015; Download as PDF</button>
+      </div>
+      <p class="small" style="margin-top:10px;">Word downloads directly, ready to edit. PDF opens your browser's print dialog &mdash; choose &ldquo;Save as PDF&rdquo; as the destination; every modern browser and OS supports this natively, so it works offline with no extra software.</p>
+    </div>
+  `;
+
+  // wire up rubric cell editing: save on input, without re-rendering
+  // (re-rendering mid-keystroke would move the cursor and disrupt typing)
+  pack.querySelectorAll(".rubric-cell").forEach(td=>{
+    td.addEventListener("input", ()=>{
+      const key = td.getAttribute("data-key");
+      state.rubricOverrides[key] = td.textContent;
+      td.setAttribute("data-edited","1");
+    });
+  });
+  const resetRubricBtn = document.getElementById("resetRubricBtn");
+  if (resetRubricBtn) resetRubricBtn.onclick = ()=>{
+    state.rubricOverrides = {};
+    renderCoursePack();
+  };
+  const wordBtn = document.getElementById("downloadWordBtn");
+  if (wordBtn) wordBtn.onclick = downloadWord;
+  const pdfBtn = document.getElementById("downloadPdfBtn");
+  if (pdfBtn) pdfBtn.onclick = ()=> window.print();
+}
+
+/* ============================================================
+   DOWNLOAD: Word (.doc) — a dependency-free client-side export.
+   Word opens HTML files saved with a .doc extension and the
+   Office XML namespaces below; this needs no server and no
+   external library, so it works completely offline.
+   ============================================================ */
+function slugify(s){
+  return String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"").slice(0,60) || "course-pack";
+}
+
+/* Builds the Word export from the underlying data directly (not by cloning
+   the on-screen DOM). Word's HTML import does not reliably support flexbox
+   or inline-block column layouts — tested and confirmed via LibreOffice
+   conversion — so every section here uses plain <table> markup, which Word
+   renders correctly. */
+function downloadWord(){
+  const c = state.cluster;
+  const method = METHODS.find(m=>m.code===state.chosenMethod) || METHODS[0];
+
+  const contextItems = [
+    ["Discipline", c.name, "Topic", cap(c.topic)],
+    ["Option A", cap(c.oa), "Option B", cap(c.ob)],
+    ["Value A protects", cap(c.va), "Value B protects", cap(c.vb)],
+    ["Who bears the cost", cap(c.bearer), "Harder case", cap(c.harder)],
+  ];
+  const contextRows = contextItems.map(([k1,v1,k2,v2])=>
+    `<tr><td class="ctxk">${k1}</td><td class="ctxv">${v1}</td><td class="ctxk">${k2}</td><td class="ctxv">${v2}</td></tr>`
+  ).join("");
+
+  const critPills = method.crit.map(x=>`<span class="pill">${x}</span>`).join(" ");
+  const pedagogyRows = [
+    ["Method", `${method.code} &mdash; ${method.name} (${method.family})`],
+    ["Situation for this course", method.tmpl(c)],
+    ["Run and timing", method.run],
+    ["Individual evidence required", method.evidence],
+    ["Rubric criteria it evidences", critPills],
+  ].map(([label,val])=>`<tr><td class="field-label">${label}</td><td>${val}</td></tr>`).join("");
+
+  const critList = method.crit.join(", ");
+  const stageCells = stageData(c, method, critList).map(([tag,title,body,meta])=>
+    `<td class="stage-cell"><span class="stage-tag">${tag}</span><div class="stage-title">${title}</div><p>${body}</p><div class="stage-meta">${meta}</div></td>`
+  ).join("");
+  const briefRows = briefItems(c).map(([cl,cr,txt])=>`<tr><td class="field-label">${cl} &rarr; ${cr}</td><td>${txt}</td></tr>`).join("");
+
+  const rubricRows = Object.keys(RUBRIC).map(code=>{
+    const r = RUBRIC[code];
+    const levelCells = r.levels.map((lvlFn,i)=>{
+      const key = `${code}_${i}`;
+      const custom = state.rubricOverrides[key];
+      const text = (custom !== undefined && custom !== null) ? custom : lvlFn(c);
+      return `<td>${text}</td>`;
+    }).join("");
+    return `<tr><td class="crit-label">${code}<br>${r.name}</td>${levelCells}</tr>`;
+  }).join("");
+
+  const doc = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+  <head><meta charset="utf-8"><title>Normative Competency Course Pack</title>
+  <style>
+    body{ font-family:Calibri,Arial,sans-serif; color:#241E22; font-size:11pt; }
+    h1{ font-family:Georgia,serif; color:#522348; font-size:20pt; margin-bottom:2pt; }
+    h2{ font-family:Georgia,serif; color:#522348; font-size:15pt; margin:16pt 0 6pt 0; }
+    p{ font-size:10.5pt; line-height:1.5; }
+    table{ border-collapse:collapse; width:100%; margin:6pt 0 14pt 0; }
+    th{ background:#522348; color:#ffffff; padding:6pt 8pt; text-align:left; font-size:9pt; }
+    td{ padding:6pt 8pt; border-bottom:1pt solid #E3DCD6; font-size:9.5pt; vertical-align:top; }
+    table.context td{ border-bottom:none; padding:4pt 8pt; }
+    td.ctxk{ font-size:8pt; color:#5b535a; text-transform:uppercase; width:18%; }
+    td.ctxv{ font-weight:700; width:32%; }
+    td.field-label{ font-weight:700; color:#522348; width:26%; }
+    td.crit-label{ font-weight:700; color:#17796A; width:15%; }
+    .pack-note{ background:#F3E3C4; padding:8pt; border-left:3pt solid #C7922A; margin-top:4pt; }
+    .pill{ background:#17796A; color:#fff; padding:1pt 5pt; font-size:8pt; font-weight:700; margin-right:3pt; }
+    table.stages{ table-layout:fixed; }
+    td.stage-cell{ border:1pt solid #E3DCD6; vertical-align:top; width:33%; }
+    .stage-tag{ font-size:8pt; font-weight:700; color:#C7922A; }
+    .stage-title{ font-weight:700; margin:3pt 0; font-size:10pt; }
+    .stage-meta{ font-size:8pt; color:#5b535a; font-style:italic; }
+  </style></head>
+  <body>
+    <p style="font-size:9pt;color:#C7922A;font-weight:700;letter-spacing:1pt;">YOUR COMPLETE COURSE PACK</p>
+    <h1>${cap(c.topic)} &mdash; ${c.name}</h1>
+    <p>Normative Competency module pack, built from SIM-ESD-NC-01.</p>
+
+    <table class="context">${contextRows}</table>
+
+    <h2>1 &middot; Pedagogy &mdash; ${method.code} ${method.name}</h2>
+    <table>${pedagogyRows}</table>
+    <div class="pack-note"><b>Watch out.</b> ${method.watch}</div>
+
+    <h2>2 &middot; Learning activities plan &mdash; practice twice, then assess</h2>
+    <table class="stages"><tr>${stageCells}</tr></table>
+
+    <h2>3 &middot; Assignment brief &mdash; four clauses</h2>
+    <p>One clause per criterion. Write the principle in the first paragraph, before the decision. The student may choose either option.</p>
+    <table>${briefRows}</table>
+    <div class="pack-note"><b>Position-neutral.</b> Marked on the reasoning, never on which option the student chooses. Two students who reach opposite decisions can both reach level 4.</div>
+
+    <h2>4 &middot; Rubric &mdash; four fixed criteria, C1 to C4</h2>
+    <p>Built on the generic rubric in SIM-ESD-NC-01, section 5.5.2, with descriptors adapted to this course. The four criteria and four level names are fixed university-wide for PLO12 attainment reporting.</p>
+    <table>
+      <tr><th>Criterion</th><th>1 Limited</th><th>2 Developing</th><th>3 Proficient</th><th>4 Exemplary</th></tr>
+      ${rubricRows}
+    </table>
+  </body></html>`;
+
+  const blob = new Blob(["\ufeff", doc], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `normative-competency-course-pack-${slugify(state.cluster.topic)}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+
+/* ---- shared by the on-screen pack and the Word export ---- */
+function stageData(c, method, critList){
+  return [
+    ["STAGE 1 &middot; PRACTICE, COMPONENT","Name the values and who pays",
+      `Name the value behind <b>${c.oa}</b> and behind <b>${c.ob}</b> for ${c.topic}, and state who bears the cost of each &mdash; including <b>${c.bearer}</b>.`,
+      "One session &middot; evidences C1 and C2 &middot; self-assessment plus one sentence of feedback, no mark"],
+    ["STAGE 2 &middot; PRACTICE, INTEGRATED","Decide on a principle, then test it",
+      `Decide between the options on one stated principle, apply it to a harder case &mdash; <b>${c.harder}</b> &mdash; and answer <b>${c.objection}</b>.`,
+      `One session, using ${method.code} ${method.name} &middot; evidences ${critList} &middot; feedback before grading`],
+    ["STAGE 3 &middot; ASSESSED TASK","Individual justification",
+      `${method.evidence} Written to the four-clause brief and marked against the rubric below.`,
+      "Weight 15&ndash;25% of course mark, one component only &middot; publish the rubric with the brief"],
+  ];
+}
+function briefItems(c){
+  return [
+    ["(a)","C1",`Name the values in conflict between ${c.oa} and ${c.ob} &mdash; ${c.va} against ${c.vb} &mdash; including your own, and say how it shaped your choice.`],
+    ["(b)","C2",`State who bears the cost of your decision, including ${c.bearer}, and who is protected &mdash; now and over time.`],
+    ["(c)","C3",`State the principle you applied before you state your choice, apply it to both options, and show that it still holds in a harder case: ${c.harder}.`],
+    ["(d)","C4",`State the strongest objection to your decision &mdash; ${c.objection} &mdash; and respond to it without abandoning your principle.`],
+  ];
+}
+
+function renderAll(){
+  renderPicker();
+  renderCustomize();
+  renderWaypoints();
+  renderDock();
+  renderNotes();
+  renderCoursePack();
+}
+
+document.getElementById("resetBtn").onclick = ()=>{
+  state = { activeCluster: CLUSTERS[2], variantIndex: 0, cluster: makeFields(CLUSTERS[2], 0), activeWay:1, visited:new Set(), chosenMethod:null, chosenCriterion:"C1", chosenLevel:2, checklist:{}, rubricOverrides:{} };
+  renderAll();
+  window.scrollTo({top:0, behavior:"smooth"});
+};
+
+renderAll();
+</script>
+</body>
+</html>
